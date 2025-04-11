@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -12,11 +11,7 @@ const CartPage = () => {
   const navigate = useNavigate();
 
   const handleCheckout = () => {
-    // In a real application, this would redirect to a checkout page
-    toast({
-      title: "Checkout",
-      description: "This would normally redirect to a checkout page.",
-    });
+    navigate('/checkout');
   };
 
   if (cart.length === 0) {
@@ -44,10 +39,8 @@ const CartPage = () => {
       <h1 className="text-3xl font-bold mb-8">Your Shopping Cart</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-            {/* Headers - Desktop */}
             <div className="hidden md:grid grid-cols-5 p-4 bg-gray-50 border-b border-gray-200">
               <div className="col-span-2">
                 <span className="font-medium">Product</span>
@@ -63,7 +56,6 @@ const CartPage = () => {
               </div>
             </div>
             
-            {/* Cart Items */}
             {cart.map((item) => {
               const price = item.discount 
                 ? (item.price - (item.price * item.discount / 100)) 
@@ -74,7 +66,6 @@ const CartPage = () => {
                   key={`${item.id}-${item.size}-${item.color}`} 
                   className="grid grid-cols-1 md:grid-cols-5 p-4 border-b border-gray-200 gap-4"
                 >
-                  {/* Product Image and Info */}
                   <div className="col-span-2 flex">
                     <div className="w-20 h-20 bg-gray-100 mr-4">
                       <img 
@@ -109,7 +100,6 @@ const CartPage = () => {
                     </div>
                   </div>
                   
-                  {/* Price */}
                   <div className="md:text-center flex md:block items-center">
                     <span className="text-sm font-medium md:hidden mr-2">Price:</span>
                     {item.discount ? (
@@ -122,7 +112,6 @@ const CartPage = () => {
                     )}
                   </div>
                   
-                  {/* Quantity */}
                   <div className="md:text-center flex items-center">
                     <span className="text-sm font-medium md:hidden mr-2">Quantity:</span>
                     <div className="flex border border-gray-300 inline-flex md:mx-auto">
@@ -144,7 +133,6 @@ const CartPage = () => {
                     </div>
                   </div>
                   
-                  {/* Total & Remove Button */}
                   <div className="md:text-right flex justify-between items-center">
                     <div className="flex items-center md:hidden">
                       <span className="text-sm font-medium mr-2">Total:</span>
@@ -164,7 +152,6 @@ const CartPage = () => {
               );
             })}
             
-            {/* Cart Actions */}
             <div className="p-4 bg-gray-50 flex justify-between">
               <Button 
                 variant="outline" 
@@ -189,7 +176,6 @@ const CartPage = () => {
           </div>
         </div>
         
-        {/* Order Summary */}
         <div className="lg:col-span-1">
           <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-bold mb-4">Order Summary</h2>
