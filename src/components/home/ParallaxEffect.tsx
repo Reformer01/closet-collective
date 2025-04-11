@@ -6,28 +6,41 @@ interface ParallaxProps {
   speed?: number;
   direction?: 'up' | 'down' | 'left' | 'right';
   className?: string;
+  delay?: number;
+  easing?: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
 }
 
 const ParallaxEffect: React.FC<ParallaxProps> = ({ 
   children, 
   speed = 0.5, 
   direction = 'up',
-  className = '' 
+  className = '',
+  delay = 0,
+  easing = 'ease-out'
 }) => {
   const [offset, setOffset] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
   
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       setOffset(scrollY * speed);
+      
+      // Set visible once scrolled into view
+      if (scrollY > delay) {
+        setIsVisible(true);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
     
+    // Initial check on mount
+    handleScroll();
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [speed]);
+  }, [speed, delay]);
 
   const getTransform = () => {
     switch (direction) {
@@ -46,10 +59,11 @@ const ParallaxEffect: React.FC<ParallaxProps> = ({
 
   return (
     <div
-      className={`transition-transform ${className}`}
+      className={`transition-transform ${isVisible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000 ${className}`}
       style={{
         transform: getTransform(),
-        willChange: 'transform'
+        willChange: 'transform, opacity',
+        transitionTimingFunction: easing
       }}
     >
       {children}

@@ -1,10 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Heart, Eye } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +12,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = useCart();
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -32,55 +33,81 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     : null;
 
   return (
-    <Link to={`/product/${product.id}`} className="group">
-      <div className="relative overflow-hidden bg-gray-100">
-        <img 
-          src={product.image} 
-          alt={product.name} 
-          className="w-full h-80 object-cover object-center transition-transform duration-500 group-hover:scale-105"
-        />
-        
-        {product.isNew && (
-          <div className="absolute top-3 left-3 bg-fashion-black text-white px-2 py-1 text-xs font-medium">
-            NEW
-          </div>
-        )}
-        
-        {product.discount && (
-          <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 text-xs font-medium">
-            {product.discount}% OFF
-          </div>
-        )}
-        
-        <div className="absolute bottom-0 left-0 right-0 bg-white bg-opacity-90 backdrop-blur-sm py-3 px-4 opacity-0 translate-y-full group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-          <Button 
-            onClick={handleQuickAdd} 
-            className="w-full bg-fashion-black hover:bg-opacity-90"
-            size="sm"
-          >
-            <ShoppingBag className="h-4 w-4 mr-2" />
-            Quick Add
-          </Button>
-        </div>
-      </div>
-      
-      <div className="mt-4">
-        <h3 className="font-medium text-gray-900 group-hover:text-fashion-black transition-colors">
-          {product.name}
-        </h3>
-        <p className="text-fashion-gray mt-1">{product.category}</p>
-        <div className="mt-1">
-          {salePrice ? (
-            <div className="flex items-center">
-              <span className="text-red-500 font-medium">${salePrice}</span>
-              <span className="ml-2 text-fashion-gray line-through text-sm">${product.price.toFixed(2)}</span>
+    <div 
+      className="group relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Link to={`/product/${product.id}`} className="block">
+        <div className="relative overflow-hidden bg-gray-100 aspect-[3/4]">
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            className={`w-full h-full object-cover object-center transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+          />
+          
+          <div className={`absolute inset-0 bg-black bg-opacity-10 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}></div>
+          
+          {product.isNew && (
+            <div className="absolute top-3 left-3 bg-fashion-black text-white px-3 py-1 text-xs font-medium z-10">
+              NEW
             </div>
-          ) : (
-            <span className="font-medium">${product.price.toFixed(2)}</span>
           )}
+          
+          {product.discount && (
+            <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 text-xs font-medium z-10">
+              {product.discount}% OFF
+            </div>
+          )}
+          
+          <div className={`absolute bottom-0 left-0 right-0 bg-white bg-opacity-95 backdrop-blur-md py-4 px-4 transform transition-transform duration-500 ${isHovered ? 'translate-y-0' : 'translate-y-full'}`}>
+            <div className="flex space-x-2">
+              <Button 
+                onClick={handleQuickAdd} 
+                className="flex-1 bg-fashion-black hover:bg-black transition-colors"
+                size="sm"
+              >
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                Add to Cart
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-fashion-black hover:bg-fashion-black hover:text-white transition-all"
+                onClick={(e) => e.preventDefault()}
+              >
+                <Heart className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-fashion-black hover:bg-fashion-black hover:text-white transition-all"
+                onClick={(e) => e.preventDefault()}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
-    </Link>
+        
+        <div className="mt-4 space-y-1">
+          <h3 className="font-medium text-gray-900 group-hover:text-fashion-black transition-colors">
+            {product.name}
+          </h3>
+          <p className="text-fashion-gray">{product.category}</p>
+          <div className="mt-1">
+            {salePrice ? (
+              <div className="flex items-center">
+                <span className="text-red-500 font-medium">${salePrice}</span>
+                <span className="ml-2 text-fashion-gray line-through text-sm">${product.price.toFixed(2)}</span>
+              </div>
+            ) : (
+              <span className="font-medium">${product.price.toFixed(2)}</span>
+            )}
+          </div>
+        </div>
+      </Link>
+    </div>
   );
 };
 
