@@ -1,12 +1,23 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import Hero from '@/components/home/Hero';
+import FeaturedCategories from '@/components/home/FeaturedCategories';
+import FeaturedProducts from '@/components/home/FeaturedProducts';
+import Newsletter from '@/components/home/Newsletter';
+import { getFeaturedProducts, getDiscountedProducts } from '@/data/products';
 
 const Index = () => {
+  // In a real app, we would fetch this data from an API
+  const featuredProducts = getFeaturedProducts();
+  const saleProducts = getDiscountedProducts();
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div>
+      <Hero />
+      <FeaturedCategories />
+      <FeaturedProducts title="New Arrivals" products={featuredProducts} />
+      <FeaturedProducts title="On Sale" products={saleProducts} />
+      <Newsletter />
     </div>
   );
 };
