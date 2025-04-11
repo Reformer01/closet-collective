@@ -43,6 +43,14 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    cursor: none; /* Hide default cursor when custom cursor is active */
+  }
+
+  /* Fallback for mobile devices which don't support custom cursors well */
+  @media (max-width: 768px) {
+    body {
+      cursor: auto;
+    }
   }
 }
 

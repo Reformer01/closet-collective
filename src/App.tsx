@@ -13,6 +13,7 @@ import CategoryPage from "./pages/CategoryPage";
 import CartPage from "./components/cart/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
+import CustomCursor from "./components/ui/CustomCursor";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <div className="flex flex-col min-h-screen">
+            <CustomCursor />
             <Navbar />
             <main className="flex-grow pt-16 md:pt-20">
               <Routes>
