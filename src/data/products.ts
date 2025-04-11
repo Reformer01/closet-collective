@@ -38,7 +38,7 @@ export const products: Product[] = [
     id: 4,
     name: "Leather Crossbody Bag",
     price: 129.99,
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa",
     category: "Accessories",
     description: "Crafted from genuine leather, this crossbody bag combines functionality with timeless style. Multiple compartments help keep your essentials organized.",
     colors: ["#8B4513", "#000000"]
@@ -66,12 +66,14 @@ export const products: Product[] = [
   },
   {
     id: 7,
-    name: "Classic Gold Watch",
+    name: "Radiant Timepiece R93",
     price: 199.99,
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+    image: "https://images.unsplash.com/photo-1614164185128-e4ec99c436d7",
     category: "Accessories",
-    description: "A timeless accessory that adds sophistication to any outfit. Our gold watch features premium materials and precise movement.",
-    isNew: true
+    description: "A statement of luxury and precision. The R93 features a vibrant design with premium materials and Swiss movement. Water-resistant up to 50m.",
+    isNew: true,
+    colors: ["#FF5500", "#000000", "#FFFFFF"],
+    sizes: ["35MM", "40MM"]
   },
   {
     id: 8,
@@ -82,6 +84,27 @@ export const products: Product[] = [
     description: "Engineered for performance and comfort, these sneakers feature responsive cushioning and breathable mesh upper.",
     sizes: ["7", "8", "9", "10", "11", "12"],
     colors: ["#000000", "#FF0000", "#87CEFA"]
+  },
+  {
+    id: 9,
+    name: "Chronograph Elite B22",
+    price: 399.99,
+    image: "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3",
+    category: "Accessories",
+    description: "The Chronograph Elite B22 combines sophistication with functionality. Features include chronograph, date display, and luminous hands.",
+    colors: ["#000000", "#C0C0C0"],
+    sizes: ["40MM", "42MM"],
+    isNew: true
+  },
+  {
+    id: 10,
+    name: "Minimalist Silver Watch",
+    price: 149.99,
+    image: "https://images.unsplash.com/photo-1524805444758-089113d48a6d",
+    category: "Accessories",
+    description: "Elegance in simplicity. Our minimalist watch features a clean dial, premium stainless steel, and Japanese quartz movement.",
+    colors: ["#C0C0C0", "#FFD700"],
+    discount: 10
   }
 ];
 
