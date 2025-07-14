@@ -38,6 +38,10 @@ const CheckoutPage = () => {
     cvv: '',
   });
 
+  const [discountCode, setDiscountCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(0); // stores the discount amount
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -54,6 +58,29 @@ const CheckoutPage = () => {
     setFormData({ ...formData, paymentMethod: method });
   };
 
+  const handleApplyDiscount = () => {
+    if (discountCode.toUpperCase() === 'SAVE10') {
+      const discountPercentage = 0.10; // 10% discount
+      setAppliedDiscount(totalAmount * discountPercentage);
+      toast({
+        title: "Discount Applied!",
+        description: "10% off your order has been applied.",
+      });
+    } else {
+      setAppliedDiscount(0);
+      toast({
+        title: "Invalid Discount Code",
+        description: "The discount code you entered is not valid.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Calculate final total including tax and discount
+  const subtotal = totalAmount;
+  const tax = subtotal * 0.08;
+  const finalTotal = (subtotal + tax - appliedDiscount);
+
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,25 +95,34 @@ const CheckoutPage = () => {
       return;
     }
 
-    // In a real application, this would send data to a payment processor
-    // and handle the payment flow
+    setIsProcessingPayment(true);
 
-    // Show success toast
-    toast({
-      title: "Order placed successfully!",
-      description: "Thank you for your purchase.",
-    });
+    // Simulate payment processing
+    setTimeout(() => {
+      setIsProcessingPayment(false);
+      // Simulate payment success or failure
+      const paymentSuccess = Math.random() > 0.1; // 90% success rate for simulation
 
-    // Clear cart
-    clearCart();
-
-    // Redirect to success page (in a real app)
-    // For now, we'll just navigate back to home
-    navigate('/');
+      if (paymentSuccess) {
+        toast({
+          title: "Order placed successfully!",
+          description: "Thank you for your purchase. Your order has been confirmed.",
+          variant: "success",
+        });
+        clearCart();
+        navigate('/'); // Redirect to home or a success page
+      } else {
+        toast({
+          title: "Payment Failed",
+          description: "There was an issue processing your payment. Please try again or use a different method.",
+          variant: "destructive",
+        });
+      }
+    }, 2000); // Simulate 2-second payment processing
   };
 
   // Redirect to cart if cart is empty
-  if (cart.length === 0) {
+  if (cart.length === 0 && !isProcessingPayment) { // Add isProcessingPayment to avoid redirecting during processing
     navigate('/cart');
     return null;
   }
@@ -342,6 +378,7 @@ const CheckoutPage = () => {
                 type="button"
                 variant="outline" 
                 onClick={() => navigate('/cart')}
+                disabled={isProcessingPayment}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Return to Cart
@@ -350,9 +387,10 @@ const CheckoutPage = () => {
               <Button 
                 type="submit"
                 className="bg-fashion-black hover:bg-opacity-90 flex-1"
+                disabled={isProcessingPayment}
               >
-                <CreditCard className="h-4 w-4 mr-2" />
-                Complete Order
+                {isProcessingPayment ? 'Processing...' : 'Complete Order'}
+                {isProcessingPayment ? null : <CreditCard className="h-4 w-4 mr-2" />}
               </Button>
             </div>
           </form>
@@ -391,22 +429,28 @@ const CheckoutPage = () => {
               <div className="space-y-2 border-b pb-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-medium">${totalAmount.toFixed(2)}</span>
+                  <span className="font-medium">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   <span>Free</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>${(totalAmount * 0.08).toFixed(2)}</span>
+                  <span>Tax (8%)</span>
+                  <span>${tax.toFixed(2)}</span>
                 </div>
+                {appliedDiscount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span className="font-medium">-${appliedDiscount.toFixed(2)}</span>
+                  </div>
+                )}
               </div>
               
               {/* Total */}
               <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
-                <span>${(totalAmount + (totalAmount * 0.08)).toFixed(2)}</span>
+                <span>Order Total</span>
+                <span>${finalTotal.toFixed(2)}</span>
               </div>
               
               {/* Discount Code */}
@@ -414,8 +458,18 @@ const CheckoutPage = () => {
                 <Input 
                   placeholder="Discount code"
                   className="flex-1"
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
+                  disabled={isProcessingPayment}
                 />
-                <Button variant="outline">Apply</Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleApplyDiscount}
+                  disabled={isProcessingPayment}
+                >
+                  Apply
+                </Button>
               </div>
               
               {/* Secure Checkout Notice */}

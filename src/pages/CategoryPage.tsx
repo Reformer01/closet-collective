@@ -1,11 +1,13 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ProductCard from '@/components/products/ProductCard';
-import { getProductsByCategory } from '@/data/products';
+import { getProductsByCategory, products as allProductsData } from '@/data/products'; // Import allProductsData
 import { Product } from '@/types/product';
 import { Filter, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
@@ -13,22 +15,77 @@ const CategoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc'>('default');
   const [showFilters, setShowFilters] = useState(false);
+  
+  // New state for filters
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [minPrice, setMinPrice] = useState<string>('');
+  const [maxPrice, setMaxPrice] = useState<string>('');
+
+  const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '28', '30', '32', '34', '36', '7', '8', '9', '10', '11', '12', '35MM', '40MM', '42MM'];
+  const availableColors = [
+    { hex: '#bf988a', name: 'Rosy Brown' },
+    { hex: '#247c6d', name: 'Pine Green' },
+    { hex: '#031c26', name: 'Midnight Green' },
+    { hex: '#FFFFFF', name: 'White' },
+    { hex: '#000000', name: 'Black' },
+    { hex: '#C0C0C0', name: 'Silver' },
+    { hex: '#0000FF', name: 'Blue' },
+    { hex: '#A52A2A', name: 'Brown' },
+    { hex: '#F5F5DC', name: 'Beige' },
+    { hex: '#808080', name: 'Gray' },
+    { hex: '#8B4513', name: 'Saddle Brown' },
+    { hex: '#87CEEB', name: 'Sky Blue' },
+    { hex: '#FFC0CB', name: 'Pink' },
+    { hex: '#FF5500', name: 'Orange' },
+    { hex: '#FF0000', name: 'Red' },
+    { hex: '#87CEFA', name: 'Light Sky Blue' },
+    { hex: '#FFD700', name: 'Gold' }
+  ];
 
   useEffect(() => {
     setLoading(true);
-    
-    // In a real app, this would be an API call with filters
-    setTimeout(() => {
-      if (category) {
-        const fetchedProducts = getProductsByCategory(category);
-        setProducts(fetchedProducts);
+    let fetchedProducts = category 
+      ? getProductsByCategory(category) 
+      : allProductsData; // Fallback for broader search if needed
+
+    // Apply filters
+    let filtered = fetchedProducts.filter(product => {
+      // Filter by size
+      if (selectedSizes.length > 0) {
+        if (!product.sizes || !product.sizes.some(size => selectedSizes.includes(size))) {
+          return false;
+        }
       }
-      setLoading(false);
-    }, 500);
-  }, [category]);
+
+      // Filter by color
+      if (selectedColors.length > 0) {
+        if (!product.colors || !product.colors.some(color => selectedColors.includes(color))) {
+          return false;
+        }
+      }
+
+      // Filter by price
+      const productPrice = product.price;
+      const min = parseFloat(minPrice);
+      const max = parseFloat(maxPrice);
+
+      if (!isNaN(min) && productPrice < min) {
+        return false;
+      }
+      if (!isNaN(max) && productPrice > max) {
+        return false;
+      }
+
+      return true;
+    });
+    
+    setProducts(filtered);
+    setLoading(false);
+  }, [category, selectedSizes, selectedColors, minPrice, maxPrice]);
 
   // Sort products based on the selected option
-  const sortedProducts = [...products].sort((a, b) => {
+  const sortedAndFilteredProducts = [...products].sort((a, b) => {
     if (sortBy === 'price-asc') {
       return a.price - b.price;
     } else if (sortBy === 'price-desc') {
@@ -36,6 +93,27 @@ const CategoryPage = () => {
     }
     return 0; // default order
   });
+
+  const handleSizeChange = (size: string) => {
+    setSelectedSizes(prev => 
+      prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]
+    );
+  };
+
+  const handleColorChange = (colorHex: string) => {
+    setSelectedColors(prev => 
+      prev.includes(colorHex) ? prev.filter(c => c !== colorHex) : [...prev, colorHex]
+    );
+  };
+
+  const handleClearAllFilters = () => {
+    setSelectedSizes([]);
+    setSelectedColors([]);
+    setMinPrice('');
+    setMaxPrice('');
+    setSortBy('default');
+    setShowFilters(false);
+  };
 
   if (loading) {
     return (
@@ -98,10 +176,14 @@ const CategoryPage = () => {
             <div>
               <h4 className="text-sm font-medium mb-2">Size</h4>
               <div className="flex flex-wrap gap-2">
-                {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
+                {availableSizes.map((size) => (
                   <button
                     key={size}
-                    className="px-3 py-1 border border-gray-300 hover:border-fashion-black text-sm"
+                    type="button"
+                    onClick={() => handleSizeChange(size)}
+                    className={`px-3 py-1 border border-gray-300 text-sm ${
+                      selectedSizes.includes(size) ? 'bg-gray-900 text-white' : 'hover:border-fashion-black'
+                    }`}
                   >
                     {size}
                   </button>
@@ -113,12 +195,17 @@ const CategoryPage = () => {
             <div>
               <h4 className="text-sm font-medium mb-2">Color</h4>
               <div className="flex flex-wrap gap-2">
-                {['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#FFFF00'].map((color) => (
+                {availableColors.map((color) => (
                   <button
-                    key={color}
-                    className="w-6 h-6 rounded-full border border-gray-300"
-                    style={{ backgroundColor: color }}
-                    aria-label={`Filter by ${color} color`}
+                    key={color.hex}
+                    type="button"
+                    onClick={() => handleColorChange(color.hex)}
+                    className={`w-6 h-6 rounded-full border border-gray-300 ${
+                      selectedColors.includes(color.hex) ? 'ring-2 ring-offset-2 ring-blue-500' : ''
+                    }`}
+                    style={{ backgroundColor: color.hex }}
+                    aria-label={`Filter by ${color.name} color`}
+                    title={color.name}
                   />
                 ))}
               </div>
@@ -126,48 +213,46 @@ const CategoryPage = () => {
             
             {/* Price Filter */}
             <div>
-              <h4 className="text-sm font-medium mb-2">Price</h4>
-              <div className="space-y-1">
-                <label className="flex items-center">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="text-sm">Under $50</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="text-sm">$50 - $100</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="text-sm">$100 - $200</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="text-sm">$200+</span>
-                </label>
+              <h4 className="text-sm font-medium mb-2">Price Range</h4>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  placeholder="Min"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="w-24"
+                />
+                <span>-</span>
+                <Input
+                  type="number"
+                  placeholder="Max"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="w-24"
+                />
               </div>
             </div>
           </div>
           
           <div className="flex justify-end mt-4">
-            <Button variant="outline" size="sm" className="mr-2">
+            <Button variant="outline" size="sm" className="mr-2" onClick={handleClearAllFilters}>
               Clear All
             </Button>
-            <Button size="sm" className="bg-fashion-black hover:bg-opacity-90">
-              Apply Filters
-            </Button>
+            {/* <Button size="sm" className="bg-fashion-black hover:bg-opacity-90">Apply Filters</Button> */}
+            {/* Apply Filters is implicitly handled by useEffect dependencies */}
           </div>
         </div>
       )}
       
       {/* Products Grid */}
-      {products.length === 0 ? (
+      {sortedAndFilteredProducts.length === 0 ? (
         <div className="text-center py-16">
           <h2 className="text-xl font-medium mb-2">No products found</h2>
           <p className="text-fashion-gray">Try adjusting your filters or check back later.</p>
         </div>
       ) : (
-        <div className="product-grid">
-          {sortedProducts.map((product) => (
+        <div className="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {sortedAndFilteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

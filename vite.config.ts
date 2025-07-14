@@ -12,9 +12,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
- visualizer({ open: true }),
-    componentTagger(),
+    mode === 'development' && componentTagger(), // Keep componentTagger for development only
+    visualizer({ open: true, filename: "stats.html" }), // Ensure visualizer runs for build and generates stats.html
   ].filter(Boolean),
   resolve: {
     alias: {

@@ -14,6 +14,22 @@ const CartPage = () => {
     navigate('/checkout');
   };
 
+  const handleRemoveFromCart = (id: number, size?: string, color?: string) => {
+    removeFromCart(id, size, color);
+    toast({
+      title: "Item Removed",
+      description: "The item has been removed from your cart.",
+    });
+  };
+
+  const handleUpdateQuantity = (id: number, newQuantity: number, size?: string, color?: string) => {
+    updateQuantity(id, newQuantity, size, color);
+    toast({
+      title: "Quantity Updated",
+      description: `Quantity for item updated to ${newQuantity}.`,
+    });
+  };
+
   if (cart.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 mt-16 text-center">
@@ -91,7 +107,7 @@ const CartPage = () => {
                         )}
                       </div>
                       <button 
-                        onClick={() => removeFromCart(item.id, item.size, item.color)} 
+                        onClick={() => handleRemoveFromCart(item.id, item.size, item.color)} 
                         className="text-sm text-red-500 flex items-center mt-2 hover:text-red-600 transition-colors md:hidden"
                       >
                         <Trash2 className="h-3 w-3 mr-1" />
@@ -117,7 +133,7 @@ const CartPage = () => {
                     <div className="flex border border-gray-300 inline-flex md:mx-auto">
                       <button 
                         className="px-3 py-1 border-r border-gray-300 hover:bg-gray-100"
-                        onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1), item.size, item.color)}
+                        onClick={() => handleUpdateQuantity(item.id, Math.max(1, item.quantity - 1), item.size, item.color)}
                         aria-label="Decrease quantity"
                       >
                         -
@@ -125,7 +141,7 @@ const CartPage = () => {
                       <span className="px-3 py-1 min-w-[40px] text-center">{item.quantity}</span>
                       <button 
                         className="px-3 py-1 border-l border-gray-300 hover:bg-gray-100"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1, item.size, item.color)}
                         aria-label="Increase quantity"
                       >
                         +
@@ -140,7 +156,7 @@ const CartPage = () => {
                     <div className="flex items-center justify-between w-full">
                       <span className="font-medium md:ml-auto">${(price * item.quantity).toFixed(2)}</span>
                       <button 
-                        onClick={() => removeFromCart(item.id, item.size, item.color)} 
+                        onClick={() => handleRemoveFromCart(item.id, item.size, item.color)} 
                         className="text-red-500 p-1 hover:text-red-600 transition-colors hidden md:block"
                         aria-label="Remove item"
                       >

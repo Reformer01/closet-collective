@@ -17,12 +17,10 @@ const ProductPage = () => {
     const fetchProduct = () => {
       if (!id) return;
       
-      // Simulate network request
-      setTimeout(() => {
-        const fetchedProduct = getProductById(parseInt(id));
-        setProduct(fetchedProduct || null);
-        setLoading(false);
-      }, 500);
+      // Removed simulated network request for faster loading
+      const fetchedProduct = getProductById(parseInt(id));
+      setProduct(fetchedProduct || null);
+      setLoading(false);
     };
 
     fetchProduct();

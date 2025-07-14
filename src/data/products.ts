@@ -11,7 +11,11 @@ export const products: Product[] = [
     description: "A timeless classic, our white T-shirt is made from 100% organic cotton for ultimate comfort and breathability. Perfect for layering or wearing alone, this versatile piece is a wardrobe essential.",
     sizes: ["XS", "S", "M", "L", "XL"],
     colors: ["#FFFFFF", "#000000", "#C0C0C0"],
-    isNew: true
+    isNew: true,
+    reviews: [
+      { id: 1, rating: 5, comment: "Excellent quality and very comfortable!", author: "Alice Smith", date: "January 15, 2023" },
+      { id: 2, rating: 4, comment: "Good basic tee, a bit thin but soft.", author: "Bob Johnson", date: "February 2, 2023" },
+    ],
   },
   {
     id: 2,
@@ -22,7 +26,10 @@ export const products: Product[] = [
     description: "These premium slim fit jeans offer the perfect balance of style and comfort. Made from high-quality denim with a touch of stretch for ease of movement.",
     sizes: ["28", "30", "32", "34", "36"],
     colors: ["#0000FF", "#000000"],
-    discount: 15
+    discount: 15,
+    reviews: [
+      { id: 3, rating: 5, comment: "Perfect fit and great color!", author: "Charlie Brown", date: "March 10, 2023" },
+    ],
   },
   {
     id: 3,
@@ -72,8 +79,12 @@ export const products: Product[] = [
     category: "Accessories",
     description: "A statement of luxury and precision. The R93 features a vibrant design with premium materials and Swiss movement. Water-resistant up to 50m.",
     isNew: true,
-    colors: ["#FF5500", "#000000", "#FFFFFF"],
-    sizes: ["35MM", "40MM"]
+    colors: ["#bf988a", "#247c6d", "#031c26"], // Rosy Brown, Pine Green, Midnight Green
+    sizes: ["35MM", "40MM"],
+    reviews: [
+      { id: 4, rating: 5, comment: "Absolutely stunning watch! The pine green color is even better in person.", author: "Diana Prince", date: "April 1, 2023" },
+      { id: 5, rating: 4, comment: "Great watch, but the strap feels a bit stiff initially.", author: "Bruce Wayne", date: "April 10, 2023" },
+    ],
   },
   {
     id: 8,
@@ -92,7 +103,7 @@ export const products: Product[] = [
     image: "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3",
     category: "Accessories",
     description: "The Chronograph Elite B22 combines sophistication with functionality. Features include chronograph, date display, and luminous hands.",
-    colors: ["#000000", "#C0C0C0"],
+    colors: ["#031c26", "#C0C0C0"], // Using Midnight Green
     sizes: ["40MM", "42MM"],
     isNew: true
   },
@@ -103,7 +114,7 @@ export const products: Product[] = [
     image: "https://images.unsplash.com/photo-1524805444758-089113d48a6d",
     category: "Accessories",
     description: "Elegance in simplicity. Our minimalist watch features a clean dial, premium stainless steel, and Japanese quartz movement.",
-    colors: ["#C0C0C0", "#FFD700"],
+    colors: ["#C0C0C0", "#bf988a"], // Using Rosy Brown
     discount: 10
   }
 ];

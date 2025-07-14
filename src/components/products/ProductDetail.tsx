@@ -1,15 +1,25 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Heart, Share2, ArrowLeft } from 'lucide-react';
+import { ShoppingBag, Heart, Share2, ArrowLeft, Star } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/types/product';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface ProductDetailProps {
   product: Product | null;
   loading: boolean;
+}
+
+interface Review {
+  id: number;
+  rating: number;
+  comment: string;
+  author: string;
+  date: string;
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
@@ -24,6 +34,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
     product?.colors?.[0]
   );
   const [quantity, setQuantity] = useState(1);
+
+  // State for reviews
+  const [reviews, setReviews] = useState<Review[]>(
+    product?.reviews || [] // Assuming product might have initial reviews
+  );
+  const [newReview, setNewReview] = useState({
+    rating: 0,
+    comment: '',
+    author: '',
+  });
 
   if (loading) {
     return (
@@ -86,6 +106,31 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
+    });
+  };
+
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newReview.rating === 0 || !newReview.comment.trim() || !newReview.author.trim()) {
+      toast({
+        title: "Missing Review Information",
+        description: "Please provide a rating, comment, and your name for the review.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reviewToAdd: Review = {
+      id: reviews.length + 1,
+      ...newReview,
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    };
+
+    setReviews(prevReviews => [...prevReviews, reviewToAdd]);
+    setNewReview({ rating: 0, comment: '', author: '' });
+    toast({
+      title: "Review Submitted",
+      description: "Thank you for your feedback!",
     });
   };
 
@@ -224,6 +269,75 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
           </Button>
         </div>
       </div>
+
+      {/* Product Reviews Section */}
+      <section className="mt-16 bg-white p-8 rounded-lg shadow-sm">
+        <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
+
+        {reviews.length === 0 ? (
+          <p className="text-fashion-gray mb-6">Be the first to review this product!</p>
+        ) : (
+          <div className="space-y-8 mb-8">
+            {reviews.map((review) => (
+              <div key={review.id} className="border-b pb-4 last:border-b-0">
+                <div className="flex items-center mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-5 w-5 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                      fill={i < review.rating ? 'currentColor' : 'none'}
+                    />
+                  ))}
+                  <span className="ml-3 text-sm font-medium">{review.rating}/5 Stars</span>
+                </div>
+                <p className="font-semibold mb-1">{review.author}</p>
+                <p className="text-sm text-fashion-gray mb-2">{review.date}</p>
+                <p className="text-gray-700">{review.comment}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <h3 className="text-xl font-bold mb-4">Write a Review</h3>
+        <form onSubmit={handleReviewSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="review-rating" className="mb-2 block">Your Rating</Label>
+            <div className="flex space-x-1">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`h-8 w-8 cursor-pointer ${i < newReview.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                  fill={i < newReview.rating ? 'currentColor' : 'none'}
+                  onClick={() => setNewReview({ ...newReview, rating: i + 1 })}
+                />
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="review-comment" className="mb-2 block">Your Comment</Label>
+            <Textarea
+              id="review-comment"
+              placeholder="Share your thoughts on the product..."
+              value={newReview.comment}
+              onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+              rows={4}
+            />
+          </div>
+          <div>
+            <Label htmlFor="review-author" className="mb-2 block">Your Name</Label>
+            <Input
+              id="review-author"
+              type="text"
+              placeholder="John Doe"
+              value={newReview.author}
+              onChange={(e) => setNewReview({ ...newReview, author: e.target.value })}
+            />
+          </div>
+          <Button type="submit" className="bg-fashion-black hover:bg-opacity-90">
+            Submit Review
+          </Button>
+        </form>
+      </section>
     </div>
   );
 };

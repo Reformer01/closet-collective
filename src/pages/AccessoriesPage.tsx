@@ -1,40 +1,37 @@
-
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
+import ParallaxEffect from '@/components/home/ParallaxEffect';
 import { getProductsByCategory } from '@/data/products';
 import { Product } from '@/types/product';
-import { ArrowRight, Circle, CircleDot, PlusCircle, MinusCircle } from 'lucide-react';
-import ParallaxEffect from '@/components/home/ParallaxEffect';
-import { useNavigate } from 'react-router-dom';
 
-const AccessoriesPage = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+function AccessoriesPage() {
   const [loading, setLoading] = useState(true);
-  const [activeVariant, setActiveVariant] = useState('40MM');
-  const [activeColor, setActiveColor] = useState('#FF5500');
+  const [products, setProducts] = useState<Product[]>([]);
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
-  const navigate = useNavigate();
+  const [activeColor, setActiveColor] = useState<string>('#bf988a'); // Default to Rosy Brown
+  const [activeSize, setActiveSize] = useState<string>('35MM');
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     setLoading(true);
     
-    // Simulate a network request
-    setTimeout(() => {
-      const fetchedProducts = getProductsByCategory('Accessories');
-      setProducts(fetchedProducts);
-      
-      // Set first product as active by default
-      if (fetchedProducts.length > 0) {
-        setActiveProduct(fetchedProducts[0]);
-      }
-      
-      setLoading(false);
-    }, 500);
+    // Removed simulated network request for faster loading
+    const fetchedProducts = getProductsByCategory('Accessories');
+    setProducts(fetchedProducts);
+    
+    // Set first product as active by default
+    if (fetchedProducts.length > 0) {
+      setActiveProduct(fetchedProducts[0]);
+    }
+    
+    setLoading(false);
   }, []);
 
   const colorOptions = [
-    { id: 'color1', color: '#FF5500', name: 'Orange' },
-    { id: 'color2', color: '#000000', name: 'Black' },
-    { id: 'color3', color: '#FFFFFF', name: 'White' }
+    { id: 'color1', color: '#bf988a', name: 'Rosy Brown' },
+    { id: 'color2', color: '#247c6d', name: 'Pine Green' },
+    { id: 'color3', color: '#031c26', name: 'Midnight Green' }
   ];
 
   const sizeOptions = [
@@ -42,178 +39,197 @@ const AccessoriesPage = () => {
     { id: 'size2', size: '40MM' }
   ];
 
+  const handleColorChange = (color: string) => {
+    setActiveColor(color);
+  };
+
+  const handleSizeChange = (size: string) => {
+    setActiveSize(size);
+  };
+
+  const handleQuantityChange = (change: number) => {
+    setQuantity(prev => Math.max(1, prev + change));
+  };
+
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16 mt-16 h-screen flex items-center justify-center">
-        <div className="animate-pulse">
-          <div className="h-96 w-96 bg-gray-200 rounded-full mx-auto"></div>
-          <div className="h-8 bg-gray-200 rounded w-1/4 mx-auto mt-8"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto mt-4"></div>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!activeProduct) {
+    return <div className="min-h-screen flex items-center justify-center">No accessory product found.</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-16 overflow-hidden">
-      {/* Header navigation */}
-      <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <h1 className="font-bold text-xl uppercase tracking-wider">Luxury Timepieces</h1>
-          <div className="h-4 w-4 rounded-full" style={{ backgroundColor: activeColor }}></div>
-        </div>
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-2 text-sm">
-            {sizeOptions.map((option) => (
-              <button
-                key={option.id}
-                className={`px-2 py-1 ${activeVariant === option.size ? 'text-black font-medium' : 'text-gray-400'}`}
-                onClick={() => setActiveVariant(option.size)}
-              >
-                {option.size}
-              </button>
-            ))}
+    <div className="min-h-screen bg-gray-50 text-gray-900">
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 z-0 opacity-40" 
+          style={{ 
+            backgroundImage: 'url("/lovable-uploads/0983da8e-755c-4463-a28f-bd8d27624883.png")', 
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(20px)'
+          }}
+        ></div>
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center max-w-6xl mx-auto px-4">
+          <div className="lg:w-1/2 text-center lg:text-left mb-8 lg:mb-0">
+            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-4">
+              {activeProduct.name}
+            </h1>
+            <p className="text-xl md:text-2xl mb-6">
+              {activeProduct.description}
+            </p>
+            <Button 
+              className="px-8 py-3 rounded-full text-lg transition-all duration-300 hover:scale-105"
+            >
+              Discover More
+            </Button>
           </div>
-          <div className="h-5 w-px bg-gray-300"></div>
-          <div className="text-sm flex items-center space-x-1">
-            <span className="text-gray-700">CART</span>
-            <span className="text-gray-400">(0)</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero section */}
-      <div className="container mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
-        {/* Left side - Product Showcase */}
-        <div className="relative">
-          <ParallaxEffect speed={0.1} direction="down" className="absolute -top-10 -left-10 w-40 h-40 z-0">
-            <div className="rounded-full border border-gray-200 w-full h-full"></div>
-          </ParallaxEffect>
-          
-          <ParallaxEffect speed={0.2} direction="up" className="absolute bottom-0 left-1/4 w-24 h-24 z-0">
-            <div className="rounded-full border border-gray-300 w-full h-full"></div>
-          </ParallaxEffect>
-          
-          <ParallaxEffect speed={0.15} className="relative z-10">
-            <div className="relative bg-gradient-to-b from-gray-100 to-gray-200 rounded-3xl p-8 aspect-square flex items-center justify-center shadow-lg">
+          <div className="lg:w-1/2 flex justify-center items-center relative h-96 w-96 lg:h-[600px] lg:w-[600px]">
+            <ParallaxEffect speed={-5}>
               <div 
-                className="absolute inset-0 opacity-10 rounded-3xl"
-                style={{ 
-                  backgroundImage: 'url("/lovable-uploads/0983da8e-755c-4463-a28f-bd8d27624883.png")', 
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  filter: 'blur(20px)'
-                }}
-              ></div>
-              <img 
-                src="/lovable-uploads/0983da8e-755c-4463-a28f-bd8d27624883.png" 
-                alt="Luxury Watch" 
-                className="max-w-full max-h-full object-contain z-10 transform transition-all duration-700 hover:scale-110 hover:rotate-12"
-              />
-            </div>
-          </ParallaxEffect>
-          
-          <div className="flex justify-center mt-8 space-x-4">
-            {colorOptions.map((option) => (
-              <button
-                key={option.id}
-                className={`w-8 h-8 rounded-full border-2 transition-all duration-300 ${activeColor === option.color ? 'border-black scale-110' : 'border-transparent opacity-60 hover:opacity-100'}`}
-                style={{ backgroundColor: option.color }}
-                onClick={() => setActiveColor(option.color)}
-                aria-label={`Select ${option.name} color`}
-              />
-            ))}
-          </div>
-        </div>
-        
-        {/* Right side - Product Details */}
-        <div className="relative">
-          <ParallaxEffect speed={0.3} direction="left" className="mb-16">
-            <div className="text-xs uppercase tracking-widest text-gray-500 mb-1">Take Plus+</div>
-            <div className="text-sm uppercase tracking-wider mb-6">Two Colors</div>
-            
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-none mb-1">
-              YOUR
-            </h2>
-            <h3 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-none mb-1">
-              RADIANT TIME
-            </h3>
-            <h4 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-none mb-8 flex items-center">
-              PIECE NEW HB 
-              <span className="ml-4 text-2xl">+</span>
-            </h4>
-            
-            <div className="flex items-center text-sm space-x-2 mb-6">
-              <span className="font-medium">+{activeVariant} {activeColor === '#FF5500' ? 'ORANGE' : activeColor === '#000000' ? 'BLACK' : 'WHITE'}</span>
-              <div className="w-6 h-6 rounded-full" style={{ backgroundColor: activeColor }}></div>
-            </div>
-            
-            <div className="mb-10">
-              <button className="flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-sm hover:bg-gray-800 transition-colors">
-                <span>SHOP NOW</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-            
-            <div className="max-w-md">
-              <p className="text-sm leading-relaxed text-gray-600 mb-8">
-                INDULGE IN THE VIBRANT ALLURE OF MODERN {activeColor === '#FF5500' ? 'ORANGE' : activeColor === '#000000' ? 'BLACK' : 'WHITE'} WATCHES (R93). 
-                ELEVATE YOUR STYLE AND ENJOY EXCLUSIVE (DISCOUNT) ON OUR RADIANT TIMEPIECES.
-              </p>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-4 rounded-sm shadow-sm">
-                  <div className="text-xs text-gray-500 mb-1">BLACK WATCH /</div>
-                  <div className="text-xs font-medium">EXCLUSIVE</div>
-                </div>
-                
-                <div className="bg-white p-4 rounded-sm shadow-sm">
-                  <div className="text-2xl font-light">01</div>
-                  <div className="text-xs text-gray-500">+30K HAPPY CUSTOMER</div>
-                </div>
-              </div>
-            </div>
-          </ParallaxEffect>
-        </div>
-      </div>
-      
-      {/* Product Gallery */}
-      <div className="bg-white py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold mb-10">More Timepieces</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product, index) => (
-              <ParallaxEffect 
-                key={product.id} 
-                speed={0.1} 
-                direction={index % 2 === 0 ? 'up' : 'down'} 
-                delay={0.1 * index}
+                className="relative flex items-center justify-center w-full h-full rounded-lg overflow-hidden"
               >
                 <div 
-                  className="bg-gray-50 rounded-lg p-6 cursor-pointer hover:shadow-lg transition-all duration-300 group"
-                  onClick={() => navigate(`/product/${product.id}`)}
-                >
-                  <div className="aspect-square rounded-md bg-gradient-to-b from-white to-gray-100 flex items-center justify-center mb-4 overflow-hidden">
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
-                      className="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-                  <h3 className="font-medium mb-1 group-hover:text-fashion-black transition-colors">{product.name}</h3>
-                  <div className="flex justify-between items-center">
-                    <p className="text-fashion-gray text-sm">${product.price.toFixed(2)}</p>
-                    <div className="text-xs px-2 py-1 bg-black text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">View</div>
-                  </div>
-                </div>
-              </ParallaxEffect>
-            ))}
+                  className="absolute inset-0 z-0" 
+                  style={{ 
+                    backgroundImage: 'url("/lovable-uploads/0983da8e-755c-4463-a28f-bd8d27624883.png")', 
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    filter: 'blur(20px)'
+                  }}
+                ></div>
+                <img 
+                  src="/lovable-uploads/0983da8e-755c-4463-a28f-bd8d27624883.png" 
+                  alt="Luxury Watch" 
+                  className="max-w-full max-h-full object-contain z-10 transform transition-all duration-700 hover:scale-110 hover:rotate-12"
+                />
+              </div>
+            </ParallaxEffect>
+            
+            <div className="flex justify-center mt-8 space-x-4">
+              {colorOptions.map((option) => (
+                <button
+                  key={option.id}
+                  className={`w-8 h-8 rounded-full border-2 ${activeColor === option.color ? 'border-blue-500' : 'border-gray-300'}`}
+                  style={{ backgroundColor: option.color }}
+                  onClick={() => handleColorChange(option.color)}
+                  title={option.name}
+                ></button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Product Details Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+          <div>
+            <h2 className="text-4xl font-bold mb-4">{activeProduct.name}</h2>
+            <p className="text-xl text-gray-700 mb-6">${activeProduct.price.toFixed(2)}</p>
+            
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2">Color: {colorOptions.find(opt => opt.color === activeColor)?.name}</h3>
+              <div className="flex space-x-3">
+                {colorOptions.map((option) => (
+                  <button
+                    key={option.id}
+                    className={`w-10 h-10 rounded-full border-2 transition-all duration-200 ${activeColor === option.color ? 'ring-2 ring-blue-500' : 'border-gray-300 hover:border-gray-400'}`}
+                    style={{ backgroundColor: option.color }}
+                    onClick={() => handleColorChange(option.color)}
+                    title={option.name}
+                  ></button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2">Size:</h3>
+              <div className="flex space-x-3">
+                {sizeOptions.map((option) => (
+                  <button
+                    key={option.id}
+                    className={`px-4 py-2 rounded-md border-2 transition-all duration-200 ${activeSize === option.size ? 'bg-gray-900 text-white' : 'border-gray-300 text-gray-700 hover:border-gray-400'}`}
+                    onClick={() => handleSizeChange(option.size)}
+                  >
+                    {option.size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-2">Quantity:</h3>
+              <div className="flex items-center space-x-3">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => handleQuantityChange(-1)}
+                  className="w-10 h-10 text-xl"
+                >-</Button>
+                <span className="text-xl font-medium">{quantity}</span>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => handleQuantityChange(1)}
+                  className="w-10 h-10 text-xl"
+                >+</Button>
+              </div>
+            </div>
+
+            <Button 
+              className="w-full py-3 rounded-md text-lg transition-all duration-300 hover:bg-gray-800"
+            >
+              Add to Cart
+            </Button>
+          </div>
+
+          <div>
+            <p className="text-gray-700 leading-relaxed mb-6">
+              {activeProduct.description}
+            </p>
+            
+            <h3 className="text-lg font-semibold mb-3">Key Features:</h3>
+            <ul className="list-disc list-inside text-gray-700 mb-6">
+              <li>Premium craftsmanship</li>
+              <li>Durable materials</li>
+              <li>Water-resistant design</li>
+              <li>Limited edition</li>
+            </ul>
+
+            <div className="bg-gradient-to-br from-gray-100 to-white p-6 rounded-lg shadow-inner">
+              <h3 className="text-2xl font-bold mb-3 text-gray-800">
+                A Symphony of Design and Precision
+              </h3>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Experience the perfect blend of aesthetic appeal and mechanical excellence. Each timepiece is a testament to timeless design and meticulous engineering.
+              </p>
+              <Button variant="link" className="px-0 text-blue-600 hover:text-blue-800">Learn More</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products/Accessories Section (Example, if needed) */}
+      <section className="py-16 bg-gray-100">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-8">Related Products</h2>
+          {/* You would typically loop through related products here */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Example Product Card (replace with actual data) */}
+            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+              <img src="/public/placeholder.svg" alt="Related Product" className="mx-auto mb-4 w-48 h-48 object-cover"/>
+              <h3 className="text-xl font-semibold mb-2">Elegant Chronograph</h3>
+              <p className="text-gray-700 mb-4">$499.00</p>
+              <Button>View Product</Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
-};
+}
 
 export default AccessoriesPage;
