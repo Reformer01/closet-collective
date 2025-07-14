@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext'; // Import useWishlist
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, Heart, Eye } from 'lucide-react';
 
@@ -12,6 +12,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist(); // Use wishlist hook
   const [isHovered, setIsHovered] = useState(false);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -27,10 +28,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     });
   };
 
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
   // Calculate the sale price if there's a discount
   const salePrice = product.discount 
     ? (product.price - (product.price * product.discount / 100)).toFixed(2) 
     : null;
+
+  const isProductInWishlist = isInWishlist(product.id);
 
   return (
     <div 
@@ -73,10 +86,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="border-fashion-black hover:bg-fashion-black hover:text-white transition-all"
-                onClick={(e) => e.preventDefault()}
+                className={`flex-none border-fashion-black ${isProductInWishlist ? 'bg-red-500 text-white hover:bg-red-600' : 'hover:bg-fashion-black hover:text-white'} transition-all`}
+                onClick={handleToggleWishlist}
+                title={isProductInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
               >
-                <Heart className="h-4 w-4" />
+                <Heart className={`h-4 w-4 ${isProductInWishlist ? 'fill-current' : ''}`} />
               </Button>
               <Button 
                 variant="outline" 

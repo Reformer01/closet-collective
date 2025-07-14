@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import ProductCard from '../products/ProductCard';
 import { Product } from '@/types/product';
@@ -38,16 +37,16 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ title, products }) 
     return () => {
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
-      }
+      };
     };
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-24 bg-gradient-to-b from-white to-fashion-lightGray">
+    <section ref={sectionRef} className="py-16 md:py-24 bg-gradient-to-b from-white to-fashion-lightGray">
       <div className="container mx-auto px-4">
         <ParallaxEffect speed={0.1} direction="up">
-          <div className="mb-16 text-center">
-            <h2 className="text-4xl font-bold mb-3">{title}</h2>
+          <div className="mb-10 md:mb-16 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">{title}</h2>
             <div className="w-16 h-1 bg-fashion-black mx-auto mb-4"></div>
             <p className="text-fashion-gray max-w-md mx-auto">Handpicked just for you</p>
           </div>
@@ -58,7 +57,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ title, products }) 
           <Carousel>
             <CarouselContent>
               {products.map((product) => (
-                <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+                <CarouselItem key={product.id} className="basis-full">
                   <div className="p-1">
                     <ProductCard product={product} />
                   </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Heart, Share2, ArrowLeft, Star } from 'lucide-react';
+import { ShoppingBag, Heart, Share2, ArrowLeft, Star, Facebook, Twitter } from 'lucide-react'; // Removed Pinterest
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/types/product';
 import { Textarea } from '@/components/ui/textarea';
@@ -86,7 +86,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
         variant: "destructive",
       });
       return;
-    }
+    };
 
     if (product.colors && !selectedColor) {
       toast({
@@ -94,7 +94,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
         variant: "destructive",
       });
       return;
-    }
+    };
 
     addToCart({
       ...product,
@@ -118,7 +118,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
         variant: "destructive",
       });
       return;
-    }
+    };
 
     const reviewToAdd: Review = {
       id: reviews.length + 1,
@@ -133,6 +133,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
       description: "Thank you for your feedback!",
     });
   };
+
+  const currentUrl = window.location.href;
+  const shareTitle = `Check out this product: ${product.name}`;
+  const shareText = `${product.description || product.name} - Buy now for $${product.price.toFixed(2)}!`;
+
+  const getFacebookShareUrl = () => {
+    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&quote=${encodeURIComponent(shareTitle)}`;
+  };
+
+  const getTwitterShareUrl = () => {
+    return `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareTitle + ". " + shareText)}`;
+  };
+
+  // Removed getPinterestShareUrl as Pinterest icon is not available from lucide-react
 
   // Calculate the sale price if there's a discount
   const salePrice = product.discount 
@@ -262,11 +276,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, loading }) => {
             </Button>
           </div>
           
-          {/* Share */}
-          <Button variant="ghost" className="text-fashion-gray">
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
-          </Button>
+          {/* Share Buttons */}
+          <div className="flex items-center gap-2 mb-8">
+            <span className="text-fashion-gray mr-2">Share:</span>
+            <a href={getFacebookShareUrl()} target="_blank" rel="noopener noreferrer">
+              <Button variant="ghost" size="icon">
+                <Facebook className="h-5 w-5 text-blue-600" />
+              </Button>
+            </a>
+            <a href={getTwitterShareUrl()} target="_blank" rel="noopener noreferrer">
+              <Button variant="ghost" size="icon">
+                <Twitter className="h-5 w-5 text-blue-400" />
+              </Button>
+            </a>
+          </div>
         </div>
       </div>
 

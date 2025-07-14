@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ShoppingBag, Menu, X, User, Search, LogOut, LogIn } from 'lucide-react';
+import { ShoppingBag, Menu, X, User, Search, LogOut, LogIn, Heart } from 'lucide-react'; // Import Heart icon
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useWishlist } from '@/context/WishlistContext'; // Import useWishlist
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cart } = useCart();
   const { isAuthenticated, logout } = useAuth();
+  const { wishlist } = useWishlist(); // Use wishlist context
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -39,6 +41,7 @@ const Navbar = () => {
 
   const categories = ['Women', 'Men', 'Accessories', 'Sale'];
   const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const wishlistCount = wishlist.length; // Get wishlist item count
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-95 backdrop-blur-sm shadow-sm">
@@ -83,6 +86,17 @@ const Navbar = () => {
                 </Button>
               </Link>
             )}
+            {/* Wishlist Link */}
+            <Link to="/wishlist" className="relative">
+              <Button variant="ghost" size="icon">
+                <Heart className="h-5 w-5" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
             <Link to="/cart" className="relative">
               <Button variant="ghost" size="icon">
                 <ShoppingBag className="h-5 w-5" />
@@ -142,6 +156,13 @@ const Navbar = () => {
                   </Button>
                 </Link>
               )}
+              {/* Mobile Wishlist Link */}
+              <Link to="/wishlist" className="flex-1">
+                <Button variant="outline" size="sm" className="w-full">
+                  <Heart className="h-4 w-4 mr-2" />
+                  Wishlist ({wishlistCount})
+                </Button>
+              </Link>
             </div>
           </nav>
         </div>
